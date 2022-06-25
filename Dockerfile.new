@@ -1,0 +1,92 @@
+FROM ros:melodic
+
+RUN apt update \
+    && apt install -y --no-install-recommends \
+    ros-melodic-desktop-full \
+    python-rosdep \
+    python-rosinstall \
+    python-rosinstall-generator \
+    python-wstool \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+#RUN /bin/bash rosdep init
+
+#RUN /bin/bash rosdep update
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    python-pip \
+    python3-vcstool \
+    python3-pyqt4 \
+    pyqt5-dev-tools \
+    libbluetooth-dev \
+    libspnav-dev \
+    pyqt4-dev-tools \
+    libcwiid-dev \
+    cmake \
+    gcc \
+    g++ \
+    qt4-qmake \
+    libqt4-dev \
+    libusb-dev \
+    libftdi-dev \
+    python3-defusedxml \
+    ros-melodic-octomap-msgs \
+    ros-melodic-joy \
+    ros-melodic-geodesy \
+    ros-melodic-octomap-ros \
+    ros-melodic-control-toolbox \
+    ros-melodic-pluginlib \
+    ros-melodic-trajectory-msgs \
+    ros-melodic-control-msgs \
+    ros-melodic-std-srvs \
+    ros-melodic-nodelet \
+    ros-melodic-urdf \
+    ros-melodic-rviz \
+    ros-melodic-kdl-conversions \
+    ros-melodic-eigen-conversions \
+    ros-melodic-tf2-sensor-msgs \
+    ros-melodic-pcl-ros \
+    ros-melodic-navigation \
+    ros-melodic-sophus \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install gym \
+    scikit-image \
+    h5py
+
+RUN export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.10.0rc0-cp27-none-linux_x86_64.whl
+
+RUN pip install --upgrade $TF_BINARY_URL \
+    keras
+
+WORKDIR /usr/local
+
+RUN git clone https://github.com/erlerobot/gym-gazebo
+
+WORKDIR /usr/local/gym-gazebo
+
+RUN pip install -e .
+
+#WORKDIR /usr/local/gym-gazebo/gym_gazebo/envs/installation
+
+#RUN /bin/bash setup_melodic.bash
+
+#WORKDIR /usr/local/gym-gazebo
+
+RUN apt update && apt install -y \
+    python-tk \
+    && rm -rf /var/lib/apt/lists/*
+
+#RUN pip install scikit-build \
+#    opencv-python==4.2.0.32
+
+EXPOSE 11345
+
+COPY gym-gazebo-entrypoint.sh /
+
+ENTRYPOINT ["/gym-gazebo-entrypoint.sh"]
+
+CMD ["/bin/bash"]
+
