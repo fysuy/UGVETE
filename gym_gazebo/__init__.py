@@ -12,3 +12,9 @@ register(
     entry_point='gym_gazebo.envs.turtlebot:GazeboMazeTurtlebotLidarEnv',
     # More arguments here
 )
+
+register(
+    id='GazeboCircuit2TurtlebotLidar-v0',
+    entry_point='gym_gazebo.envs.turtlebot:GazeboCircuit2TurtlebotLidarEnv',
+    # More arguments here
+)

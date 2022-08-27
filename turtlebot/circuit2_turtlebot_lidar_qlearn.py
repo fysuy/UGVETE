@@ -10,6 +10,8 @@ import time
 import qlearn
 import liveplot
 
+from gym.envs.registration import register
+
 def render():
     render_skip = 0 #Skip first X episodes.
     render_interval = 50 #Show render Every Y episodes.
@@ -21,7 +23,6 @@ def render():
         env.render(close=True)
 
 if __name__ == '__main__':
-
     env = gym.make('GazeboCircuit2TurtlebotLidar-v0')
 
     outdir = '/tmp/gazebo_gym_experiments'
