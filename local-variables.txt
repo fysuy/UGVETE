@@ -1,0 +1,6 @@
+export GAZEBO_MODEL_PATH=/home/seba/.gazebo/models:/usr/share/gazebo-9/models:/home/seba/Libs/UGVETE/gym_gazebo/envs/installation/../assets/models:/home/seba/Libs/chaolmu-collection/models
+export GAZEBO_RESOURCE_PATH=/usr/share/gazebo-9:/home/seba/Libs/chaolmu-collection/worlds
+alias killgazebogym='killall -9 rosout roslaunch rosmaster gzserver nodelet robot_state_publisher gzclient'
+export GYM_GAZEBO_WORLD_MAZE=/home/seba/Libs/UGVETE/gym_gazebo/envs/installation/../assets/worlds/maze.world
+export GYM_GAZEBO_WORLD_CIRCUIT2=/home/seba/Libs/UGVETE/gym_gazebo/envs/installation/../assets/worlds/circuit2.world
+export GAZEBO_MODEL_DATABASE_URI="http://models.gazebosim.org/"
