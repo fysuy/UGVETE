@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import pickle
 import gym
 from gym import wrappers
 import gym_gazebo
@@ -74,6 +75,8 @@ if __name__ == '__main__':
 
         if x%100==0:
             plotter.plot(env)
+            with open('sarsa-q.pkl', 'wb') as file:
+                pickle.dump(sarsa, file)
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)

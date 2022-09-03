@@ -6,7 +6,7 @@ from turtle import back
 class QLearn:
     def __init__(self, actions, epsilon, alpha, gamma):
         backup = {}
-        path = 'q.pkl'
+        path = 'qlearn-q.pkl'
 
         if os.path.exists(path) and os.path.getsize(path) > 0:
             with open(path, 'rb') as file:

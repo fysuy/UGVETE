@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
         if x%100==0 and qlearn.q != {}:
             plotter.plot(env)
-            with open('q.pkl', 'wb') as file:
+            with open('q-learn.pkl', 'wb') as file:
                 pickle.dump(qlearn, file)
 
         m, s = divmod(int(time.time() - start_time), 60)
