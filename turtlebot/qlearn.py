@@ -1,8 +1,20 @@
+import pickle
 import random
+import os
+from turtle import back
 
 class QLearn:
     def __init__(self, actions, epsilon, alpha, gamma):
-        self.q = {}
+        backup = {}
+        path = 'q.pkl'
+
+        if os.path.exists(path) and os.path.getsize(path) > 0:
+            with open(path, 'rb') as file:
+                backup = pickle.load(file)
+                self.q = backup.q
+        else:
+            self.q = {}
+
         self.epsilon = epsilon  # exploration constant
         self.alpha = alpha      # discount constant
         self.gamma = gamma      # discount factor

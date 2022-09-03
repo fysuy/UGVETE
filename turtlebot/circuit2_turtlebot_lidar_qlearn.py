@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from functools import reduce
 import gym
 from gym import wrappers
 import gym_gazebo
@@ -6,6 +7,7 @@ import time
 import numpy
 import random
 import time
+import pickle
 
 import qlearn
 import liveplot
@@ -80,8 +82,10 @@ if __name__ == '__main__':
                 last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
                 break
 
-        if x%100==0:
+        if x%100==0 and qlearn.q != {}:
             plotter.plot(env)
+            with open('q.pkl', 'wb') as file:
+                pickle.dump(qlearn, file)
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)
