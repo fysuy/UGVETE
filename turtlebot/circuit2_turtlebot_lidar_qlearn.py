@@ -8,7 +8,7 @@ import numpy
 import random
 import time
 import pickle
-import simulation as sim
+import app.simulation as sim
 
 import qlearn
 import liveplot

@@ -190,10 +190,10 @@ def simulate():
    if (algoritm == 1):
       #/home/felipe/gym-gazebo/examples/turtlebot
       print("Qlearn")
-      os.system("python /home/felipe/gym-gazebo/examples/turtlebot/circuit2_turtlebot_lidar_qlearn.py")
+      os.system("python $HOME/Libs/UGVETE/turtlebot/circuit2_turtlebot_lidar_qlearn.py")
    elif(algoritm== 2):
       print("Sarsa")
-      os.system("python /home/felipe/gym-gazebo/examples/turtlebot/circuit2_turtlebot_lidar_sarsa.py")
+      os.system("python $HOME/Libs/UGVETE/turtlebot/circuit2_turtlebot_lidar_sarsa.py")
    print("simular")
    execution = True
 

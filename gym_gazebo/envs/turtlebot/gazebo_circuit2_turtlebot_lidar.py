@@ -3,7 +3,7 @@ import rospy
 import roslaunch
 import time
 import numpy as np
-import simulation as sim
+import app.simulation as sim
 
 
 from gym import utils, spaces

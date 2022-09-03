@@ -8,7 +8,7 @@ import time
 import numpy
 import random
 import time
-import simulation as sim
+import app.simulation as sim
 
 import liveplot
 import sarsa
