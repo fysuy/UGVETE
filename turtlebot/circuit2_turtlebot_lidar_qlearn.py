@@ -8,11 +8,10 @@ import numpy
 import random
 import time
 import pickle
+import simulation as sim
 
 import qlearn
 import liveplot
-
-from gym.envs.registration import register
 
 def render():
     render_skip = 0 #Skip first X episodes.
@@ -41,8 +40,14 @@ if __name__ == '__main__':
     epsilon_discount = 0.9986
 
     start_time = time.time()
-    total_episodes = 10000
     highest_reward = 0
+
+    simulation = env.simulation
+    aux_total_episodes, aux_time_steps = sim.get_simulation_properties(simulation)      
+    total_episodes = int(aux_total_episodes)
+    total_time_steps = int(aux_time_steps)
+    print("Total episodes: " + str(total_episodes))
+    print("Total timesteps: "+ str(total_time_steps))    
 
     for x in range(total_episodes):
         done = False
@@ -58,7 +63,7 @@ if __name__ == '__main__':
 
         state = ''.join(map(str, observation))
 
-        for i in range(1500):
+        for i in range(total_time_steps):
 
             # Pick an action based on the current state
             action = qlearn.chooseAction(state)
