@@ -35,8 +35,8 @@ if __name__ == '__main__':
     highest_reward = 0
 
     simulation = env.simulation
-    aux_total_episodes, aux_time_steps = sim.get_simulation_properties(simulation)      
-    total_episodes = int(aux_total_episodes)
+    aux_tot_eps, aux_time_steps = sim.get_simulation_properties(simulation)      
+    total_episodes = int(aux_tot_eps)
     total_time_steps = int(aux_time_steps)
     print("Total episodes: " + str(total_episodes))
     print("Total timesteps: "+ str(total_time_steps))
@@ -88,16 +88,32 @@ if __name__ == '__main__':
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)
-        print ("EP: "+str(x+1)+" - [alpha: "+str(round(sarsa.alpha,2))+" - gamma: "+str(round(sarsa.gamma,2))+" - epsilon: "+str(round(sarsa.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
+        print (
+            "EP: " + str(x+1)
+            + " - [alpha: " + str(round(sarsa.alpha,2)) 
+            + " - gamma: " + str(round(sarsa.gamma,2))
+            + " - epsilon: " + str(round(sarsa.epsilon,2))
+            + "] - Reward: " + str(cumulated_reward)
+            + "     Time: %d:%02d:%02d" % (h, m, s)
+        )
 
     #Github table content
-    print ("\n|"+str(total_episodes)+"|"+str(sarsa.alpha)+"|"+str(sarsa.gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |")
+    print ("\n|" + str(total_episodes)
+        + "|" + str(sarsa.alpha)
+        + "|" + str(sarsa.gamma)
+        + "|" + str(initial_epsilon)
+        + "*" + str(epsilon_discount)
+        + "|" + str(highest_reward)
+        + "| PICTURE |"
+    )
 
     l = last_time_steps.tolist()
     l.sort()
 
     #print("Parameters: a="+str)
     print("Overall score: {:0.2f}".format(last_time_steps.mean()))
-    print("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
+    print("Best 100 score: {:0.2f}".format(
+        reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])
+    ))
 
     env.close()

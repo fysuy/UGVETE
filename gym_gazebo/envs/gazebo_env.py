@@ -25,13 +25,13 @@ class GazeboEnv(gym.Env):
         #self.port_gazebo = str(random_number+1) #os.environ["ROS_PORT_SIM"]
         self.port_gazebo = '11312'
 
-        os.environ["ROS_MASTER_URI"] = "http://localhost:"+self.port
-        os.environ["GAZEBO_MASTER_URI"] = "http://localhost:"+self.port_gazebo
+        os.environ["ROS_MASTER_URI"] = "http://localhost:" + self.port
+        os.environ["GAZEBO_MASTER_URI"] = "http://localhost:" + self.port_gazebo
         #
         # self.ros_master_uri = os.environ["ROS_MASTER_URI"];
 
-        print("ROS_MASTER_URI=http://localhost:"+self.port + "\n")
-        print("GAZEBO_MASTER_URI=http://localhost:"+self.port_gazebo + "\n")
+        print("ROS_MASTER_URI=http://localhost:" + self.port + "\n")
+        print("GAZEBO_MASTER_URI=http://localhost:" + self.port_gazebo + "\n")
 
         # self.port = os.environ.get("ROS_PORT_SIM", "11311")
         ros_path = os.path.dirname(subprocess.check_output(["which", "roscore"]))
@@ -88,18 +88,15 @@ class GazeboEnv(gym.Env):
     #     # print("Message", message)
 
     def step(self, action):
-
         # Implement this method in every subclass
         # Perform a step in gazebo. E.g. move the robot
         raise NotImplementedError
 
     def reset(self):
-
         # Implemented in subclass
         raise NotImplementedError
 
     def _render(self, mode="human", close=False):
-
         if close:
             tmp = os.popen("ps -Af").read()
             proccount = tmp.count('gzclient')
@@ -118,7 +115,6 @@ class GazeboEnv(gym.Env):
             self.gzclient_pid = 0
 
     def _close(self):
-
         # Kill gzclient, gzserver and roscore
         tmp = os.popen("ps -Af").read()
         gzclient_count = tmp.count('gzclient')
@@ -139,13 +135,11 @@ class GazeboEnv(gym.Env):
             os.wait()
 
     def _configure(self):
-
         # TODO
         # From OpenAI API: Provides runtime configuration to the enviroment
         # Maybe set the Real Time Factor?
         pass
     def _seed(self):
-
         # TODO
         # From OpenAI API: Sets the seed for this env's random number generator(s)
         pass

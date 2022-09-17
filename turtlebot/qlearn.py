@@ -41,7 +41,11 @@ class QLearn:
         if random.random() < self.epsilon:
             minQ = min(q); mag = max(abs(minQ), abs(maxQ))
             # add random values to all the actions, recalculate maxQ
-            q = [q[i] + random.random() * mag - .5 * mag for i in range(len(self.actions))] 
+            q = [
+                q[i] + random.random() 
+                * mag - .5 
+                * mag for i in range(len(self.actions))
+            ] 
             maxQ = max(q)
 
         count = q.count(maxQ)
