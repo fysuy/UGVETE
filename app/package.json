@@ -1,0 +1,79 @@
+{
+    "name": "my-electron-app",
+    "version": "0.1.0",
+    "private": true,
+    "author": "Sebastian Gonzalez & Felipe Schramm",
+    "description": "UGVETE",
+    "main": "./public/electron.js",
+    "homepage": "./",
+    "dependencies": {
+        "@emotion/react": "^11.10.4",
+        "@emotion/styled": "^11.10.4",
+        "@mui/icons-material": "^5.10.6",
+        "@mui/material": "^5.10.5",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^13.4.0",
+        "@testing-library/user-event": "^13.5.0",
+        "config-ini-parser": "^1.6.1",
+        "python-shell": "^3.0.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-scripts": "5.0.1",
+        "web-vitals": "^2.1.4"
+    },
+    "webPreferences": {
+        "nodeIntegration": true
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon .\"",
+        "electron:package:mac": "yarn build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+        "electron:package:win": "yarn build && electron-builder -w -c.extraMetadata.main=build/electron.js",
+        "electron:package:linux": "yarn build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            "last 1 electron version"
+        ],
+        "development": [
+            "last 1 electron version"
+        ]
+    },
+    "devDependencies": {
+        "concurrently": "^7.4.0",
+        "cross-env": "^7.0.3",
+        "electron": "^20.1.4",
+        "electron-builder": "^23.3.3",
+        "electronmon": "^2.0.2",
+        "wait-on": "^6.0.1"
+    },
+    "build": {
+        "appId": "com.electron.myapp",
+        "productName": "My Electron App",
+        "files": [
+            "build/**/*",
+            "node_modules/**/*"
+        ],
+        "directories": {
+            "buildResources": "public"
+        },
+        "mac": {
+            "target": "dmg"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "linux": {
+            "target": "deb"
+        }
+    }
+}

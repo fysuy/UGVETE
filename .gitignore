@@ -4,6 +4,8 @@
 .DS_Store
 .cache
 
+**/node_modules
+
 # Setuptools distribution and build folders.
 /dist/
 /build

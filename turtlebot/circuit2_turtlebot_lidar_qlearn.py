@@ -8,7 +8,8 @@ import numpy
 import random
 import time
 import pickle
-import app.simulation as sim
+#import app.simulation as sim
+import json
 
 import qlearn
 import liveplot
@@ -24,7 +25,10 @@ def render():
         env.render(close=True)
 
 if __name__ == '__main__':
-    env = gym.make('GazeboCircuit2TurtlebotLidar-v0')
+    f = open('/home/seba/Libs/my-electron-app/config.json', 'r')
+    config = json.loads(f.read())
+
+    env = gym.make('GazeboCircuit2TurtlebotLidar-v0', config=config)
 
     outdir = '/tmp/gazebo_gym_experiments'
     env = gym.wrappers.Monitor(env, outdir, force=True)
@@ -42,8 +46,12 @@ if __name__ == '__main__':
     start_time = time.time()
     highest_reward = 0
 
-    simulation = env.simulation
-    aux_total_episodes, aux_time_steps = sim.get_simulation_properties(simulation)      
+    #simulation = env.simulation
+
+    aux_total_episodes = config['episodes']
+    aux_time_steps = config['timesteps']
+
+    # aux_total_episodes, aux_time_steps = sim.get_simulation_properties(simulation)      
     total_episodes = int(aux_total_episodes)
     total_time_steps = int(aux_time_steps)
     print("Total episodes: " + str(total_episodes))

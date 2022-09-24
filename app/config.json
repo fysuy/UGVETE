@@ -1,0 +1,1 @@
+{"episodes":10000,"timesteps":1500,"actions":[{"id":0,"name":"Adelante","velocity":0.3,"turn":0,"reward":5,"enabled":true},{"id":1,"name":"Izquierda","velocity":0.05,"turn":0.3,"reward":1,"enabled":true},{"id":2,"name":"Derecha","velocity":0.05,"turn":-0.3,"reward":1,"enabled":true}],"algorithms":[{"name":"qLearn","selected":true},{"name":"sarsa","selected":false}]}
