@@ -3,37 +3,43 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import AlgorithmList from './components/AlgorithmList';
-import ActionList from './components/ActionList';
 import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 
 function App() {
-    const [config, setConfig] = React.useState({
+    let defaultConfig = {
         episodes: 10000,
 
         timesteps: 1500,
-        
+
         actions: [{
             id: 0,
             name: 'Adelante',
             velocity: 0.3,
             turn: 0,
-            reward: 5,
-            enabled: true
+            reward: 5
         }, {
             id: 1,
             name: 'Izquierda',
             velocity: 0.05,
             turn: 0.3,
-            reward: 1,
-            enabled: true
+            reward: 1
         }, {
             id: 2,
             name: 'Derecha',
             velocity: 0.05,
             turn: -0.3,
-            reward: 1,
-            enabled: true
+            reward: 1
         }],
 
         algorithms: [{
@@ -42,8 +48,21 @@ function App() {
         }, {
             name: 'sarsa',
             selected: false
+        }],
+
+        worlds: [{
+            name: 'oficina',
+            selected: true
+        }, {
+            name: 'laberinto',
+            selected: false
+        }, {
+            name: 'circuito',
+            selected: false
         }]
-    });
+    }
+
+    const [config, setConfig] = React.useState(defaultConfig);
 
     function timestepsOnChange(e) {
         setConfig({ timesteps: e.target.value });
@@ -53,61 +72,244 @@ function App() {
         setConfig({ episodes: e.target.value });
     }
 
+    function algorithmOnChange(e) {
+        let selectedAlgorithm = e.target.value;
+        let algorithms = [];
+        let i;
+        let currentAlgorithm;
+
+        for (i = 0; i < this.config.algorithms.length; i++) {
+            currentAlgorithm = this.config.algorithms[i].name;
+            
+            algorithms.push({
+                name: currentAlgorithm,
+                selected: currentAlgorithm === selectedAlgorithm
+            });
+        }
+
+        setConfig({ algorithms: algorithms });
+    }
+
+    function generate(cfg, element) {
+        return cfg.actions.map((action) =>
+            React.cloneElement(element, {
+                key: action.id,
+                children: [
+                    <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                            <TextField
+                                onChange={(event) => updateAction(event)}
+                                required
+                                inputProps={{
+                                    'data-action-id': action.id
+                                }}
+                                value={action.name}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                onChange={(event) => updateAction(event)}
+                                required
+                                inputProps={{
+                                    'data-action-id': action.id
+                                }}
+                                value={action.velocity}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                onChange={(event) => updateAction(event)}
+                                required
+                                inputProps={{
+                                    'data-action-id': action.id
+                                }}
+                                value={action.turn}
+                            />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <TextField
+                                onChange={(event) => updateAction(event)}
+                                required
+                                inputProps={{
+                                    'data-action-id': action.id
+                                }}
+                                value={action.reward}
+                            />
+                        </Grid>
+                    </Grid>
+                ]
+            })
+        );
+    }
+
+    function updateAction(event) {
+        let actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
+        let value = event.target.value;
+        let found;
+        let i = 0;
+
+        while (!found && i < this.actions.length) {
+            found = this.actions[i].id === actionId;
+
+            if (found) {
+                this.actions[i].name = value;
+                this.setConfig({ actions: this.actions });
+            }
+
+            i++;
+        }
+    }
+
     return (
         <div className="App">
             <Box
                 component="form"
                 sx={{
-                    height: 480,
+                    heigth: 720
                 }}
                 noValidate
                 autoComplete="off"
             >
                 <Grid container spacing={2}>
-                    <Grid xs={3}>
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Episodios"
-                            defaultValue={ config.episodes }
-                            onChange={ episodesOnChange }
-                        />
+                    <Grid xs={4}>
+                        <Typography sx={{ mb: 1, textAlign: 'left' }} variant="h7" component="div">
+                            Ejecución
+                        </Typography>
+                        <Grid xs={12}>
+                            <TextField
+                                required
+                                id="outlined-required"
+                                label="Episodios"
+                                value={config.episodes}
+                                onChange={episodesOnChange}
+                            />
+                        </Grid>
+                        <Grid xs={12}>
+                            <TextField
+                                required
+                                id="outlined-required"
+                                label="Timesteps"
+                                value={config.timesteps}
+                                helperText="Por episodio"
+                                onChange={timestepsOnChange}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid xs={3}>
-                        <TextField
-                            required
-                            id="outlined-required"
-                            label="Timesteps"
-                            defaultValue={ config.timesteps }
-                            helperText="Por episodio"
-                            onChange={ timestepsOnChange }
-                        />
-                    </Grid>
-                    <Grid xs={6}>
-                        <AlgorithmList setConfig={ setConfig } config={ config } />
+                    <Grid xs={8}>
+                        <Grid item xs={12}>
+                            <Typography sx={{ mb: 1, textAlign: 'left' }} variant="h7" component="div">
+                                Ambientes
+                            </Typography>
+                        </Grid>
+                        <Grid container>
+                            <FormControl>
+                                <RadioGroup
+                                    row
+                                    value={ config.worlds.find(x => x.selected).name }
+                                    name="radio-buttons-group"
+                                >
+                                    {
+                                        config.worlds.map((world) => {
+                                            return <Grid item xs={4} key={world.name}>
+                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} />
+                                            </Grid>
+                                        })
+                                    }
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography sx={{ mb: 1, textAlign: 'left' }} variant="h7" component="div">
+                                Algoritmos
+                            </Typography>
+                        </Grid>
+                        <Grid container>
+                            <FormControl>
+                                <RadioGroup
+                                    row
+                                    value={ config.algorithms.find(x => x.selected).name }
+                                    name="radio-buttons-group"
+                                >
+                                    {
+                                        config.algorithms.map((algorithm) => {
+                                            return <Grid item xs={6} key={algorithm.name}>
+                                                <FormControlLabel value={algorithm.name} control={<Radio />} label={algorithm.name} onChange={algorithmOnChange}/>
+                                            </Grid>
+                                        })
+                                    }
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
                     </Grid>
                     <Grid xs={12}>
-                        <ActionList setConfig={ setConfig } config={ config } />
+                        <Grid container>
+                            <Typography sx={{ textAlign: 'left' }} variant="h7" component="div">
+                                Acciones
+                            </Typography>
+                            <List dense={false}>
+                                {generate(config,
+                                    <ListItem
+                                        secondaryAction={
+                                            <IconButton edge="end" aria-label="delete">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        }
+                                    >
+                                    </ListItem>
+                                )}
+                            </List>
+                        </Grid>
                     </Grid>
-                    <Grid xs={12}>
-                        <Button
-                            onClick={() => {
-                                window.triggerProcess(JSON.stringify(config));
-                            }}
+                    <Grid container xs={12}>
+                        <Grid xs={3}>
+                            <Button
+                                onClick={() => {
+                                    window.loadConfig().then((config) => {
+                                        setConfig({ ...defaultConfig, ...config });
+                                    });
+                                }}
 
-                            variant="contained"
-                        >
-                            Comenzar
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                window.stopProcess();
-                            }}
+                                variant="contained"
+                            >
+                                Cargar config
+                            </Button>
+                        </Grid>
 
-                            variant="contained"
-                        >
-                            Detener
-                        </Button>
+                        <Grid xs={3}>
+                            <Button
+                                onClick={() => {
+                                    setConfig(defaultConfig);
+                                }}
+
+                                variant="contained"
+                            >
+                                Reset config
+                            </Button>
+                        </Grid>
+
+                        <Grid xs={3}>
+                            <Button
+                                onClick={() => {
+                                    window.triggerProcess(JSON.stringify(config));
+                                }}
+
+                                variant="contained"
+                            >
+                                Comenzar
+                            </Button>
+                        </Grid>
+
+                        <Grid xs={3}>
+                            <Button
+                                onClick={() => {
+                                    window.stopProcess();
+                                }}
+
+                                variant="contained"
+                            >
+                                Detener
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box>

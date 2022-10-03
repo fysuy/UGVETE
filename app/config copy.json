@@ -1,0 +1,49 @@
+{
+    "episodes": 20000,
+    "timesteps": 1000,
+    "actions": [
+        {
+            "id": 0,
+            "name": "Adelante 1",
+            "velocity": 0.5,
+            "turn": 0,
+            "reward": 50,
+            "enabled": true
+        },
+        {
+            "id": 1,
+            "name": "Izquierda",
+            "velocity": 0.1,
+            "turn": 0.6,
+            "reward": 10,
+            "enabled": true
+        },
+        {
+            "id": 2,
+            "name": "Derecha",
+            "velocity": 0.1,
+            "turn": -0.6,
+            "reward": 10,
+            "enabled": true
+        }
+    ],
+
+    "algorithms": [{
+        "name": "qLearn",
+        "selected": false
+    }, {
+        "name": "sarsa",
+        "selected": true
+    }],
+
+    "worlds": [{
+        "name": "oficina",
+        "selected": false
+    }, {
+        "name": "laberinto",
+        "selected": false
+    }, {
+        "name": "circuito",
+        "selected": true
+    }]
+}

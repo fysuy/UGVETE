@@ -1,17 +1,18 @@
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol, ipcMain } = require("electron");
+const { app, BrowserWindow, protocol, ipcMain, ipcRenderer, dialog } = require("electron");
 const path = require("path");
 const url = require("url");
 const { spawn } = require('child_process');
 const fs = require('fs');
 
 let processes = [];
+let mainWindow;
 
 // Create the native browser window.
 function createWindow() {
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+    mainWindow = new BrowserWindow({
+        width: 992,
+        height: 720,
         // Set the path of an additional "preload" script that can be used to
         // communicate between node-land and browser-land.
         webPreferences: {
@@ -95,16 +96,24 @@ app.on("web-contents-created", (event, contents) => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 ipcMain.on("triggerProcess", (e, data) => {
-    //console.log(data);
+    let algorithm;
+
     fs.writeFileSync('config.json', data);
 
-    let python = spawn("python" , ["/home/seba/Libs/UGVETE/turtlebot/circuit2_turtlebot_lidar_qlearn.py"]);
-    let gzclient = spawn("gzclient", ["--verbose"]);
+    if (data.selectedWorld == 'qLearn') {
+        algorithm = spawn("python" , [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_qlearn.py"]);
+    }
 
-    processes.push(python);
+    if (data.selectedWorld == 'sarsa') {
+        algorithm = spawn("python" , [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_sarsa.py"]);
+    }
+
+    let gzclient = spawn("gzclient", ["--verbose"]);
+    
+    processes.push(algorithm);
     processes.push(gzclient);
     
-    python.stdout.on('data', function(data) {
+    algorithm.stdout.on('data', function(data) {
         console.log(data.toString())
     })
 
@@ -119,4 +128,13 @@ ipcMain.on("stopProcess", (e) => {
     }
 
     spawn("killall", ["-9", "rosout", "roslaunch", "rosmaster", "gzserver", "nodelet", "robot_state_publisher", "gzclient"]);
+});
+
+ipcMain.handle("loadConfig", (e) => {
+    let file = dialog.showOpenDialogSync(mainWindow, {
+        properties: ['openFile'],
+        defaultPath: process.env.UGVETE_HOME
+    });
+
+    return JSON.parse(fs.readFileSync(file[0]));
 });

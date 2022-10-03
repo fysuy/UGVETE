@@ -13,4 +13,8 @@ process.once("loaded", () => {
     contextBridge.exposeInMainWorld("stopProcess", () => {
         ipcRenderer.send('stopProcess');
     });
+
+    contextBridge.exposeInMainWorld("loadConfig", (e) => {
+        return ipcRenderer.invoke('loadConfig');
+    });
 });
