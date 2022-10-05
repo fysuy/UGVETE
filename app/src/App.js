@@ -119,7 +119,8 @@ function App() {
                                 onChange={(event) => updateAction(event)}
                                 required
                                 inputProps={{
-                                    'data-action-id': action.id
+                                    'data-action-id': action.id,
+                                    'data-field': 'name'
                                 }}
                                 value={action.name}
                             />
@@ -129,7 +130,8 @@ function App() {
                                 onChange={(event) => updateAction(event)}
                                 required
                                 inputProps={{
-                                    'data-action-id': action.id
+                                    'data-action-id': action.id,
+                                    'data-field': 'velocity'
                                 }}
                                 value={action.velocity}
                             />
@@ -139,7 +141,8 @@ function App() {
                                 onChange={(event) => updateAction(event)}
                                 required
                                 inputProps={{
-                                    'data-action-id': action.id
+                                    'data-action-id': action.id,
+                                    'data-field': 'turn'
                                 }}
                                 value={action.turn}
                             />
@@ -149,7 +152,8 @@ function App() {
                                 onChange={(event) => updateAction(event)}
                                 required
                                 inputProps={{
-                                    'data-action-id': action.id
+                                    'data-action-id': action.id,
+                                    'data-field': 'reward'
                                 }}
                                 value={action.reward}
                             />
@@ -162,16 +166,25 @@ function App() {
 
     function updateAction(event) {
         let actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
+        let actionField = event.target.getAttribute('data-field');
         let value = event.target.value;
+        let actions=[...config.actions];
         let found;
         let i = 0;
 
-        while (!found && i < this.actions.length) {
-            found = this.actions[i].id === actionId;
+        while (!found && i < actions.length) {
+            let action = actions[i];
+
+            found = action.id === actionId;
 
             if (found) {
-                this.actions[i].name = value;
-                this.setConfig({ ...config, actions: this.actions });
+                if (actionField != 'name') {
+                    action[actionField] = parseFloat(value);
+                } else {
+                    action[actionField] = value;
+                }
+
+                setConfig({ ...config, actions: actions });
             }
 
             i++;
