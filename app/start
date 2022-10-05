@@ -1,0 +1,19 @@
+yarn run v1.22.19
+$ /home/seba/Libs/UGVETE/app/node_modules/.bin/electron
+
+Electron 20.1.4 - Build cross platform desktop apps with JavaScript, HTML, and CSS
+Usage: electron [options] [path]
+
+A path to an Electron app may be specified. It must be one of the following:
+  - index.js file.
+  - Folder containing a package.json file.
+  - Folder containing an index.js file.
+  - .html/.htm file.
+  - http://, https://, or file:// URL.
+
+Options:
+  -i, --interactive     Open a REPL to the main process.
+  -r, --require         Module to preload (option can be repeated).
+  -v, --version         Print the version.
+  -a, --abi             Print the Node ABI version.
+Done in 4.12s.

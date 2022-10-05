@@ -65,11 +65,11 @@ function App() {
     const [config, setConfig] = React.useState(defaultConfig);
 
     function timestepsOnChange(e) {
-        setConfig({ timesteps: e.target.value });
+        setConfig({ ...config, timesteps: e.target.value });
     }
 
     function episodesOnChange(e) {
-        setConfig({ episodes: e.target.value });
+        setConfig({ ...config, episodes: e.target.value });
     }
 
     function algorithmOnChange(e) {
@@ -78,8 +78,8 @@ function App() {
         let i;
         let currentAlgorithm;
 
-        for (i = 0; i < this.config.algorithms.length; i++) {
-            currentAlgorithm = this.config.algorithms[i].name;
+        for (i = 0; i < config.algorithms.length; i++) {
+            currentAlgorithm = config.algorithms[i].name;
             
             algorithms.push({
                 name: currentAlgorithm,
@@ -87,7 +87,25 @@ function App() {
             });
         }
 
-        setConfig({ algorithms: algorithms });
+        setConfig({ ...config, algorithms: algorithms });
+    }
+
+    function worldsOnChange(e) {
+        let selectedWorld = e.target.value;
+        let worlds = [];
+        let i;
+        let currentWorld;
+
+        for (i = 0; i < config.worlds.length; i++) {
+            currentWorld = config.worlds[i].name;
+            
+            worlds.push({
+                name: currentWorld,
+                selected: currentWorld === selectedWorld
+            });
+        }
+
+        setConfig({ ...config, worlds: worlds });
     }
 
     function generate(cfg, element) {
@@ -153,7 +171,7 @@ function App() {
 
             if (found) {
                 this.actions[i].name = value;
-                this.setConfig({ actions: this.actions });
+                this.setConfig({ ...config, actions: this.actions });
             }
 
             i++;
@@ -211,7 +229,7 @@ function App() {
                                     {
                                         config.worlds.map((world) => {
                                             return <Grid item xs={4} key={world.name}>
-                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} />
+                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} onChange={worldsOnChange}/>
                                             </Grid>
                                         })
                                     }

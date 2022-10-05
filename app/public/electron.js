@@ -97,18 +97,35 @@ app.on("web-contents-created", (event, contents) => {
 // code. You can also put them in separate files and require them here.
 ipcMain.on("triggerProcess", (e, data) => {
     let algorithm;
+    let gzclient;
 
     fs.writeFileSync('config.json', data);
 
-    if (data.selectedWorld == 'qLearn') {
-        algorithm = spawn("python" , [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_qlearn.py"]);
+    data = JSON.parse(data);
+
+    for (let index = 0; index < data.worlds.length; index++) {
+        let world = data.worlds[index];
+        
+        if (world.selected) {
+            switch (world.name) {
+                case 'oficina':
+                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/office.world";
+                    break;
+                case 'laberinto':
+                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/maze.world";
+                    break;
+                case 'circuito':
+                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/round.world";
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
-    if (data.selectedWorld == 'sarsa') {
-        algorithm = spawn("python" , [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_sarsa.py"]);
-    }
+    algorithm = spawn("python", [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_qlearn.py"]);
 
-    let gzclient = spawn("gzclient", ["--verbose"]);
+    gzclient = spawn("gzclient", ["--verbose"]);
     
     processes.push(algorithm);
     processes.push(gzclient);
