@@ -199,6 +199,21 @@ function App() {
         setConfig({ ...config, actions: actions });
     }
 
+    function addAction() {
+        let actions=[...config.actions];
+        let newId = actions.length ? actions[actions.length - 1].id + 1 : 0;
+
+        actions.push({ 
+            id: newId,
+            name: 'Accion ' + (newId + 1),
+            turn: 0,
+            velocity: 1,
+            reward: 1
+        });
+
+        setConfig({ ...config, actions: actions });
+    }
+
     return (
         <div className="App">
             <Box
@@ -351,6 +366,15 @@ function App() {
                         </Grid>
                     </Grid>
                     <Grid container xs={12}>
+                        <Grid xs={3}>
+                            <Button
+                                onClick={addAction}
+
+                                variant="contained"
+                            >
+                                Agregar Accion
+                            </Button>
+                        </Grid>
                         <Grid xs={3}>
                             <Button
                                 onClick={() => {
