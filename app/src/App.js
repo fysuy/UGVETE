@@ -191,6 +191,14 @@ function App() {
         }
     }
 
+    function removeAction(actionIdToRemove) {
+        let actions=[...config.actions];
+        
+        actions = actions.filter(action => action.id !== actionIdToRemove);
+
+        setConfig({ ...config, actions: actions });
+    }
+
     return (
         <div className="App">
             <Box
@@ -278,16 +286,67 @@ function App() {
                                 Acciones
                             </Typography>
                             <List dense={false}>
-                                {generate(config,
-                                    <ListItem
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                    </ListItem>
-                                )}
+                                {
+                                    config.actions.map((action) => (
+                                        <ListItem
+                                            key={action.id}
+                                            secondaryAction={
+                                                <IconButton edge="end" aria-label="delete" onClick={() => removeAction(action.id)}> 
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            }
+                                            children={[
+                                                <Grid key={'action-fields-' + action.id} container spacing={2}>
+                                                    <Grid item xs={3}>
+                                                        <TextField
+                                                            onChange={(event) => updateAction(event)}
+                                                            required
+                                                            inputProps={{
+                                                                'data-action-id': action.id,
+                                                                'data-field': 'name'
+                                                            }}
+                                                            value={action.name}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={3}>
+                                                        <TextField
+                                                            onChange={(event) => updateAction(event)}
+                                                            required
+                                                            inputProps={{
+                                                                'data-action-id': action.id,
+                                                                'data-field': 'velocity'
+                                                            }}
+                                                            value={action.velocity}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={3}>
+                                                        <TextField
+                                                            onChange={(event) => updateAction(event)}
+                                                            required
+                                                            inputProps={{
+                                                                'data-action-id': action.id,
+                                                                'data-field': 'turn'
+                                                            }}
+                                                            value={action.turn}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={3}>
+                                                        <TextField
+                                                            onChange={(event) => updateAction(event)}
+                                                            required
+                                                            inputProps={{
+                                                                'data-action-id': action.id,
+                                                                'data-field': 'reward'
+                                                            }}
+                                                            value={action.reward}
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                            ]}
+                                        >
+                                        </ListItem>
+                                    ))
+                                }
                             </List>
                         </Grid>
                     </Grid>
