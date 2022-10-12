@@ -65,11 +65,25 @@ function App() {
     const [config, setConfig] = React.useState(defaultConfig);
 
     function timestepsOnChange(e) {
-        setConfig({ ...config, timesteps: e.target.value });
+        let maxTimesteps = 9999;
+        let minTimesteps = 0;
+        if (e.target.value > minTimesteps && e.target.value <= maxTimesteps && !(e.target.value.includes("."))) {
+            setConfig({ ...config, timesteps: e.target.value });
+        }
+        else {
+            alert("Error: Ingresa un valor entero entre 1 y 9999");
+        }
     }
 
     function episodesOnChange(e) {
-        setConfig({ ...config, episodes: e.target.value });
+        let maxEpisodes = 99999;
+        let minEpisodes = 0;
+        if (e.target.value > minEpisodes && e.target.value <= maxEpisodes && !(e.target.value.includes("."))) {
+            setConfig({ ...config, episodes: e.target.value });
+        }
+        else {
+            alert("Error: Ingresa un valor entero entre 1 y 99999");
+        }
     }
 
     function algorithmOnChange(e) {
@@ -80,7 +94,7 @@ function App() {
 
         for (i = 0; i < config.algorithms.length; i++) {
             currentAlgorithm = config.algorithms[i].name;
-            
+
             algorithms.push({
                 name: currentAlgorithm,
                 selected: currentAlgorithm === selectedAlgorithm
@@ -98,7 +112,7 @@ function App() {
 
         for (i = 0; i < config.worlds.length; i++) {
             currentWorld = config.worlds[i].name;
-            
+
             worlds.push({
                 name: currentWorld,
                 selected: currentWorld === selectedWorld
@@ -131,7 +145,8 @@ function App() {
                                 required
                                 inputProps={{
                                     'data-action-id': action.id,
-                                    'data-field': 'velocity'
+                                    'data-field': 'velocity',
+                                    'inputMode': 'decimal'  
                                 }}
                                 value={action.velocity}
                             />
@@ -139,10 +154,11 @@ function App() {
                         <Grid item xs={3}>
                             <TextField
                                 onChange={(event) => updateAction(event)}
-                                required
+                                required                                                                
                                 inputProps={{
                                     'data-action-id': action.id,
-                                    'data-field': 'turn'
+                                    'data-field': 'turn',
+                                    'inputMode': 'decimal'                                    
                                 }}
                                 value={action.turn}
                             />
@@ -153,7 +169,8 @@ function App() {
                                 required
                                 inputProps={{
                                     'data-action-id': action.id,
-                                    'data-field': 'reward'
+                                    'data-field': 'reward',
+                                    'inputMode': 'numeric'
                                 }}
                                 value={action.reward}
                             />
@@ -168,25 +185,49 @@ function App() {
         let actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
         let actionField = event.target.getAttribute('data-field');
         let value = event.target.value;
-        let actions=[...config.actions];
+        let actions = [...config.actions];
         let found;
         let i = 0;
+        let flag = false;
 
         while (!found && i < actions.length) {
             let action = actions[i];
 
             found = action.id === actionId;
 
-            if (found) {
-                if (actionField != 'name') {
-                    action[actionField] = parseFloat(value);
-                } else {
-                    action[actionField] = value;
+            if (found) {                
+                switch (actionField) {
+                    case 'velocity':
+                        let  velDotqty = (value.split(".").length - 1)
+                        if (!((value) >= 0.0 && (value) <= 1.0 && (value.includes(".")) && (velDotqty === 1))) {
+                            alert("Error: la velocidad debe ser un valor decimal entre 0 y 1");
+                            flag = true;
+                        }
+                        else action[actionField] = (value);
+                        break;                        
+                    case 'turn': 
+                        let  turnDotqty = (value.split(".").length - 1)
+                        if (!((value) >= -1.0 && (value) <= 1.0 && (value.includes(".")) && (turnDotqty === 1))) {
+                            alert("Error: la angulo de giro debe ser un valor decimal entre -1 y 1");
+                            flag = true;
+                        }
+                        else action[actionField] = (value);
+                        break;                                                                 
+                    case 'reward':
+                        if (!(parseInt(value)>= -1000 && parseInt(value) <= 1000 && !(value.includes(".")))) {
+                            alert("Error: la recompensa debe ser un valor entero entre -1000 y 1000");
+                            flag = true;
+                        }
+                        else action[actionField] = parseInt(value);
+                        break;                         
+                    default: 
+                        action[actionField] = value;                      
+                }                                           
+                console.log(action[actionField]);
+                if(!flag){
+                    setConfig({ ...config, actions: actions });
                 }
-
-                setConfig({ ...config, actions: actions });
             }
-
             i++;
         }
     }
@@ -259,13 +300,13 @@ function App() {
                             <FormControl>
                                 <RadioGroup
                                     row
-                                    value={ config.worlds.find(x => x.selected).name }
+                                    value={config.worlds.find(x => x.selected).name}
                                     name="radio-buttons-group"
                                 >
                                     {
                                         config.worlds.map((world) => {
                                             return <Grid item xs={4} key={world.name}>
-                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} onChange={worldsOnChange}/>
+                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} onChange={worldsOnChange} />
                                             </Grid>
                                         })
                                     }
@@ -281,13 +322,13 @@ function App() {
                             <FormControl>
                                 <RadioGroup
                                     row
-                                    value={ config.algorithms.find(x => x.selected).name }
+                                    value={config.algorithms.find(x => x.selected).name}
                                     name="radio-buttons-group"
                                 >
                                     {
                                         config.algorithms.map((algorithm) => {
                                             return <Grid item xs={6} key={algorithm.name}>
-                                                <FormControlLabel value={algorithm.name} control={<Radio />} label={algorithm.name} onChange={algorithmOnChange}/>
+                                                <FormControlLabel value={algorithm.name} control={<Radio />} label={algorithm.name} onChange={algorithmOnChange} />
                                             </Grid>
                                         })
                                     }
