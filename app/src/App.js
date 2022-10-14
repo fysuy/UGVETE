@@ -63,26 +63,29 @@ function App() {
     }
 
     const [config, setConfig] = React.useState(defaultConfig);
+    const [episodesError, setEpisodesError] = React.useState('');
+    const [timestepsError, setTimestepsError] = React.useState('');
 
     function timestepsOnChange(e) {
         let maxTimesteps = 9999;
         let minTimesteps = 0;
-        if (e.target.value > minTimesteps && e.target.value <= maxTimesteps && !(e.target.value.includes("."))) {
-            setConfig({ ...config, timesteps: e.target.value });
-        }
-        else {
-            alert("Error: Ingresa un valor entero entre 1 y 9999");
+        
+        if (e.target.value > minTimesteps && e.target.value <= maxTimesteps) {
+            setTimestepsError('');
+            setConfig({ ...config, timesteps: parseFloat(e.target.value).toFixed() });
+        } else {
+            setTimestepsError('Ingresa un valor entero entre 1 y 9999');
         }
     }
 
     function episodesOnChange(e) {
         let maxEpisodes = 99999;
         let minEpisodes = 0;
-        if (e.target.value > minEpisodes && e.target.value <= maxEpisodes && !(e.target.value.includes("."))) {
-            setConfig({ ...config, episodes: e.target.value });
-        }
-        else {
-            alert("Error: Ingresa un valor entero entre 1 y 99999");
+        if (e.target.value > minEpisodes && e.target.value <= maxEpisodes) {
+            setEpisodesError('');
+            setConfig({ ...config, episodes: parseFloat(e.target.value).toFixed() });
+        } else {
+            setEpisodesError('Ingresa un valor entero entre 1 y 99999');
         }
     }
 
@@ -181,6 +184,8 @@ function App() {
         );
     }
 
+    const [actionsError, setActionsError] = React.useState({});
+
     function updateAction(event) {
         let actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
         let actionField = event.target.getAttribute('data-field');
@@ -188,46 +193,62 @@ function App() {
         let actions = [...config.actions];
         let found;
         let i = 0;
-        let flag = false;
+        let errorFound = false;
+        let newActionsError = {...actionsError};
+        let velocity;
+        let turn;
+        let reward;
 
         while (!found && i < actions.length) {
             let action = actions[i];
 
             found = action.id === actionId;
 
+            if (!newActionsError[actionId]) {
+                newActionsError[actionId] = {};
+            }
+
             if (found) {                
                 switch (actionField) {
                     case 'velocity':
-                        let  velDotqty = (value.split(".").length - 1)
-                        if (!((value) >= 0.0 && (value) <= 1.0 && (value.includes(".")) && (velDotqty === 1))) {
-                            alert("Error: la velocidad debe ser un valor decimal entre 0 y 1");
-                            flag = true;
+                        velocity = parseFloat(value).toFixed(2);
+
+                        if (velocity < 0 || velocity > 1) {
+                            newActionsError[actionId].velocity = 'La velocidad debe ser un valor decimal entre 0 y 1';
+                        } else {
+                            newActionsError[actionId].velocity = null; 
+                            action[actionField] = velocity;
                         }
-                        else action[actionField] = (value);
+                        
                         break;                        
                     case 'turn': 
-                        let  turnDotqty = (value.split(".").length - 1)
-                        if (!((value) >= -1.0 && (value) <= 1.0 && (value.includes(".")) && (turnDotqty === 1))) {
-                            alert("Error: la angulo de giro debe ser un valor decimal entre -1 y 1");
-                            flag = true;
+                        turn = parseFloat(value).toFixed(2);
+
+                        if (turn < -1 || turn > 1) {
+                            newActionsError[actionId].turn = 'El angulo de giro debe ser un valor decimal entre -1 y 1';
+                        } else {
+                            newActionsError[actionId].turn = null
+                            action[actionField] = turn;
                         }
-                        else action[actionField] = (value);
                         break;                                                                 
                     case 'reward':
-                        if (!(parseInt(value)>= -1000 && parseInt(value) <= 1000 && !(value.includes(".")))) {
-                            alert("Error: la recompensa debe ser un valor entero entre -1000 y 1000");
-                            flag = true;
+                        reward = parseFloat(value).toFixed();
+
+                        if (reward < -1000 || reward > 1000) {
+                            newActionsError[actionId].reward = 'La recompensa debe ser un valor entero entre -1000 y 1000';
+                        } else {
+                            newActionsError[actionId].reward = null
+                            action[actionField] = reward;
                         }
-                        else action[actionField] = parseInt(value);
                         break;                         
                     default: 
                         action[actionField] = value;                      
-                }                                           
-                console.log(action[actionField]);
-                if(!flag){
-                    setConfig({ ...config, actions: actions });
-                }
+                }                                     
+                
+                setActionsError(newActionsError);
+                setConfig({ ...config, actions: actions });
             }
+
             i++;
         }
     }
@@ -273,20 +294,31 @@ function App() {
                         <Grid xs={12}>
                             <TextField
                                 required
+                                error={!!episodesError}
+                                helperText={episodesError}
                                 id="outlined-required"
                                 label="Episodios"
                                 value={config.episodes}
                                 onChange={episodesOnChange}
+                                type='number'
+                                inputProps={{
+                                    step: '1'
+                                }}        
                             />
                         </Grid>
                         <Grid xs={12}>
                             <TextField
                                 required
+                                error={!!timestepsError}
+                                helperText={timestepsError}
                                 id="outlined-required"
                                 label="Timesteps"
                                 value={config.timesteps}
-                                helperText="Por episodio"
                                 onChange={timestepsOnChange}
+                                type='number'
+                                inputProps={{
+                                    step: '1'
+                                }}
                             />
                         </Grid>
                     </Grid>
@@ -357,6 +389,7 @@ function App() {
                                                         <TextField
                                                             onChange={(event) => updateAction(event)}
                                                             required
+                                                            label='Nombre'
                                                             inputProps={{
                                                                 'data-action-id': action.id,
                                                                 'data-field': 'name'
@@ -368,33 +401,48 @@ function App() {
                                                         <TextField
                                                             onChange={(event) => updateAction(event)}
                                                             required
+                                                            error={!!actionsError[action.id]?.velocity}
+                                                            helperText={actionsError[action.id]?.velocity}
+                                                            label='Velocidad'
                                                             inputProps={{
                                                                 'data-action-id': action.id,
-                                                                'data-field': 'velocity'
+                                                                'data-field': 'velocity',
+                                                                step: '0.01' 
                                                             }}
                                                             value={action.velocity}
+                                                            type='number'
                                                         />
                                                     </Grid>
                                                     <Grid item xs={3}>
                                                         <TextField
                                                             onChange={(event) => updateAction(event)}
                                                             required
+                                                            error={!!actionsError[action.id]?.turn}
+                                                            helperText={actionsError[action.id]?.turn}
+                                                            label='Giro'
                                                             inputProps={{
                                                                 'data-action-id': action.id,
-                                                                'data-field': 'turn'
+                                                                'data-field': 'turn',
+                                                                step: '0.01' 
                                                             }}
                                                             value={action.turn}
+                                                            type='number'
                                                         />
                                                     </Grid>
                                                     <Grid item xs={3}>
                                                         <TextField
                                                             onChange={(event) => updateAction(event)}
                                                             required
+                                                            error={!!actionsError[action.id]?.reward}
+                                                            helperText={actionsError[action.id]?.reward}
+                                                            label='Recompensa'
                                                             inputProps={{
                                                                 'data-action-id': action.id,
-                                                                'data-field': 'reward'
+                                                                'data-field': 'reward',
+                                                                step: '1' 
                                                             }}
                                                             value={action.reward}
+                                                            type='number'
                                                         />
                                                     </Grid>
                                                 </Grid>
