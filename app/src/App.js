@@ -1,3 +1,9 @@
+/* eslint-disable react/no-children-prop */
+/* eslint-disable react/jsx-wrap-multilines */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable react/jsx-no-bind */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable react/jsx-indent */
 import './App.css';
 import * as React from 'react';
 import Button from '@mui/material/Button';
@@ -17,7 +23,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 
 function App() {
-    let defaultConfig = {
+    const defaultConfig = {
         episodes: 10000,
 
         timesteps: 1500,
@@ -60,16 +66,16 @@ function App() {
             name: 'circuito',
             selected: false
         }]
-    }
+    };
 
     const [config, setConfig] = React.useState(defaultConfig);
     const [episodesError, setEpisodesError] = React.useState('');
     const [timestepsError, setTimestepsError] = React.useState('');
 
     function timestepsOnChange(e) {
-        let maxTimesteps = 9999;
-        let minTimesteps = 0;
-        
+        const maxTimesteps = 9999;
+        const minTimesteps = 0;
+
         if (e.target.value > minTimesteps && e.target.value <= maxTimesteps) {
             setTimestepsError('');
             setConfig({ ...config, timesteps: parseFloat(e.target.value).toFixed() });
@@ -79,8 +85,8 @@ function App() {
     }
 
     function episodesOnChange(e) {
-        let maxEpisodes = 99999;
-        let minEpisodes = 0;
+        const maxEpisodes = 99999;
+        const minEpisodes = 0;
         if (e.target.value > minEpisodes && e.target.value <= maxEpisodes) {
             setEpisodesError('');
             setConfig({ ...config, episodes: parseFloat(e.target.value).toFixed() });
@@ -90,8 +96,8 @@ function App() {
     }
 
     function algorithmOnChange(e) {
-        let selectedAlgorithm = e.target.value;
-        let algorithms = [];
+        const selectedAlgorithm = e.target.value;
+        const algorithms = [];
         let i;
         let currentAlgorithm;
 
@@ -104,12 +110,12 @@ function App() {
             });
         }
 
-        setConfig({ ...config, algorithms: algorithms });
+        setConfig({ ...config, algorithms });
     }
 
     function worldsOnChange(e) {
-        let selectedWorld = e.target.value;
-        let worlds = [];
+        const selectedWorld = e.target.value;
+        const worlds = [];
         let i;
         let currentWorld;
 
@@ -122,85 +128,25 @@ function App() {
             });
         }
 
-        setConfig({ ...config, worlds: worlds });
-    }
-
-    function generate(cfg, element) {
-        return cfg.actions.map((action) =>
-            React.cloneElement(element, {
-                key: action.id,
-                children: [
-                    <Grid container spacing={2}>
-                        <Grid item xs={3}>
-                            <TextField
-                                onChange={(event) => updateAction(event)}
-                                required
-                                inputProps={{
-                                    'data-action-id': action.id,
-                                    'data-field': 'name'
-                                }}
-                                value={action.name}
-                            />
-                        </Grid>
-                        <Grid item xs={3}>
-                            <TextField
-                                onChange={(event) => updateAction(event)}
-                                required
-                                inputProps={{
-                                    'data-action-id': action.id,
-                                    'data-field': 'velocity',
-                                    'inputMode': 'decimal'  
-                                }}
-                                value={action.velocity}
-                            />
-                        </Grid>
-                        <Grid item xs={3}>
-                            <TextField
-                                onChange={(event) => updateAction(event)}
-                                required                                                                
-                                inputProps={{
-                                    'data-action-id': action.id,
-                                    'data-field': 'turn',
-                                    'inputMode': 'decimal'                                    
-                                }}
-                                value={action.turn}
-                            />
-                        </Grid>
-                        <Grid item xs={3}>
-                            <TextField
-                                onChange={(event) => updateAction(event)}
-                                required
-                                inputProps={{
-                                    'data-action-id': action.id,
-                                    'data-field': 'reward',
-                                    'inputMode': 'numeric'
-                                }}
-                                value={action.reward}
-                            />
-                        </Grid>
-                    </Grid>
-                ]
-            })
-        );
+        setConfig({ ...config, worlds });
     }
 
     const [actionsError, setActionsError] = React.useState({});
 
     function updateAction(event) {
-        let actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
-        let actionField = event.target.getAttribute('data-field');
-        let value = event.target.value;
-        let actions = [...config.actions];
+        const actionId = parseInt(event.target.getAttribute('data-action-id'), 10);
+        const actionField = event.target.getAttribute('data-field');
+        const { value } = event.target;
+        const actions = [...config.actions];
         let found;
         let i = 0;
-        let errorFound = false;
-        let newActionsError = {...actionsError};
+        const newActionsError = { ...actionsError };
         let velocity;
         let turn;
         let reward;
 
         while (!found && i < actions.length) {
-            let action = actions[i];
+            const action = actions[i];
 
             found = action.id === actionId;
 
@@ -208,72 +154,76 @@ function App() {
                 newActionsError[actionId] = {};
             }
 
-            if (found) {                
+            if (found) {
                 switch (actionField) {
-                    case 'velocity':
-                        velocity = parseFloat(value).toFixed(2);
+                case 'velocity':
+                    velocity = parseFloat(value).toFixed(2);
 
-                        if (velocity < 0 || velocity > 1) {
-                            newActionsError[actionId].velocity = 'La velocidad debe ser un valor decimal entre 0 y 1';
-                        } else {
-                            newActionsError[actionId].velocity = null; 
-                            action[actionField] = velocity;
-                        }
-                        
-                        break;                        
-                    case 'turn': 
-                        turn = parseFloat(value).toFixed(2);
+                    if (velocity < 0 || velocity > 1) {
+                        newActionsError[actionId].velocity = 'La velocidad debe ser un valor decimal entre 0 y 1';
+                    } else {
+                        newActionsError[actionId].velocity = null;
+                        action[actionField] = velocity;
+                    }
 
-                        if (turn < -1 || turn > 1) {
-                            newActionsError[actionId].turn = 'El angulo de giro debe ser un valor decimal entre -1 y 1';
-                        } else {
-                            newActionsError[actionId].turn = null
-                            action[actionField] = turn;
-                        }
-                        break;                                                                 
-                    case 'reward':
-                        reward = parseFloat(value).toFixed();
+                    break;
+                case 'turn':
+                    turn = parseFloat(value).toFixed(2);
 
-                        if (reward < -1000 || reward > 1000) {
-                            newActionsError[actionId].reward = 'La recompensa debe ser un valor entero entre -1000 y 1000';
-                        } else {
-                            newActionsError[actionId].reward = null
-                            action[actionField] = reward;
-                        }
-                        break;                         
-                    default: 
-                        action[actionField] = value;                      
-                }                                     
-                
+                    if (turn < -1 || turn > 1) {
+                        newActionsError[actionId].turn = 'El angulo de giro debe ser un valor decimal entre -1 y 1';
+                    } else {
+                        newActionsError[actionId].turn = null;
+                        action[actionField] = turn;
+                    }
+                    break;
+                case 'reward':
+                    reward = parseFloat(value).toFixed();
+
+                    if (reward < -1000 || reward > 1000) {
+                        newActionsError[actionId].reward = 'La recompensa debe ser un valor entero entre -1000 y 1000';
+                    } else {
+                        newActionsError[actionId].reward = null;
+                        action[actionField] = reward;
+                    }
+
+                    break;
+                default:
+                    action[actionField] = value;
+
+                    break;
+                }
+
                 setActionsError(newActionsError);
-                setConfig({ ...config, actions: actions });
+                setConfig({ ...config, actions });
             }
 
+            // eslint-disable-next-line no-plusplus
             i++;
         }
     }
 
     function removeAction(actionIdToRemove) {
-        let actions=[...config.actions];
-        
-        actions = actions.filter(action => action.id !== actionIdToRemove);
+        let actions = [...config.actions];
 
-        setConfig({ ...config, actions: actions });
+        actions = actions.filter((action) => action.id !== actionIdToRemove);
+
+        setConfig({ ...config, actions });
     }
 
     function addAction() {
-        let actions=[...config.actions];
-        let newId = actions.length ? actions[actions.length - 1].id + 1 : 0;
+        const actions = [...config.actions];
+        const newId = actions.length ? actions[actions.length - 1].id + 1 : 0;
 
-        actions.push({ 
+        actions.push({
             id: newId,
-            name: 'Accion ' + (newId + 1),
+            name: `Accion ${newId + 1}`,
             turn: 0,
             velocity: 1,
             reward: 1
         });
 
-        setConfig({ ...config, actions: actions });
+        setConfig({ ...config, actions });
     }
 
     return (
@@ -300,10 +250,10 @@ function App() {
                                 label="Episodios"
                                 value={config.episodes}
                                 onChange={episodesOnChange}
-                                type='number'
+                                type="number"
                                 inputProps={{
                                     step: '1'
-                                }}        
+                                }}
                             />
                         </Grid>
                         <Grid xs={12}>
@@ -315,7 +265,7 @@ function App() {
                                 label="Timesteps"
                                 value={config.timesteps}
                                 onChange={timestepsOnChange}
-                                type='number'
+                                type="number"
                                 inputProps={{
                                     step: '1'
                                 }}
@@ -332,15 +282,20 @@ function App() {
                             <FormControl>
                                 <RadioGroup
                                     row
-                                    value={config.worlds.find(x => x.selected).name}
+                                    value={config.worlds.find((x) => x.selected).name}
                                     name="radio-buttons-group"
                                 >
                                     {
-                                        config.worlds.map((world) => {
-                                            return <Grid item xs={4} key={world.name}>
-                                                <FormControlLabel value={world.name} control={<Radio />} label={world.name} onChange={worldsOnChange} />
+                                        config.worlds.map((world) => (
+                                            <Grid item xs={4} key={world.name}>
+                                                <FormControlLabel
+                                                    value={world.name}
+                                                    control={<Radio />}
+                                                    label={world.name}
+                                                    onChange={worldsOnChange}
+                                                />
                                             </Grid>
-                                        })
+                                        ))
                                     }
                                 </RadioGroup>
                             </FormControl>
@@ -354,15 +309,19 @@ function App() {
                             <FormControl>
                                 <RadioGroup
                                     row
-                                    value={config.algorithms.find(x => x.selected).name}
+                                    value={config.algorithms.find((x) => x.selected).name}
                                     name="radio-buttons-group"
                                 >
                                     {
-                                        config.algorithms.map((algorithm) => {
-                                            return <Grid item xs={6} key={algorithm.name}>
-                                                <FormControlLabel value={algorithm.name} control={<Radio />} label={algorithm.name} onChange={algorithmOnChange} />
-                                            </Grid>
-                                        })
+                                        config.algorithms.map((algorithm) => (
+                                            <Grid item xs={6} key={algorithm.name}>
+                                                <FormControlLabel
+                                                    value={algorithm.name}
+                                                    control={<Radio />}
+                                                    label={algorithm.name}
+                                                    onChange={algorithmOnChange}
+                                                />
+                                            </Grid>))
                                     }
                                 </RadioGroup>
                             </FormControl>
@@ -379,17 +338,19 @@ function App() {
                                         <ListItem
                                             key={action.id}
                                             secondaryAction={
-                                                <IconButton edge="end" aria-label="delete" onClick={() => removeAction(action.id)}> 
+                                                <IconButton edge="end" aria-label="delete" onClick={() => removeAction(action.id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             }
                                             children={[
-                                                <Grid key={'action-fields-' + action.id} container spacing={2}>
+                                                <Grid key={`action-fields-${action.id}`} container spacing={2}>
                                                     <Grid item xs={3}>
                                                         <TextField
-                                                            onChange={(event) => updateAction(event)}
+                                                            onChange={
+                                                                (event) => updateAction(event)
+                                                            }
                                                             required
-                                                            label='Nombre'
+                                                            label="Nombre"
                                                             inputProps={{
                                                                 'data-action-id': action.id,
                                                                 'data-field': 'name'
@@ -399,56 +360,73 @@ function App() {
                                                     </Grid>
                                                     <Grid item xs={3}>
                                                         <TextField
-                                                            onChange={(event) => updateAction(event)}
+                                                            onChange={
+                                                                (event) => updateAction(event)
+                                                            }
                                                             required
-                                                            error={!!actionsError[action.id]?.velocity}
-                                                            helperText={actionsError[action.id]?.velocity}
-                                                            label='Velocidad'
+                                                            error={
+                                                                !!actionsError[action.id]?.velocity
+                                                            }
+                                                            helperText={
+                                                                actionsError[action.id]?.velocity
+                                                            }
+                                                            label="Velocidad"
                                                             inputProps={{
                                                                 'data-action-id': action.id,
                                                                 'data-field': 'velocity',
-                                                                step: '0.01' 
+                                                                step: '0.01'
                                                             }}
                                                             value={action.velocity}
-                                                            type='number'
+                                                            type="number"
                                                         />
                                                     </Grid>
                                                     <Grid item xs={3}>
                                                         <TextField
-                                                            onChange={(event) => updateAction(event)}
+                                                            onChange={
+                                                                (event) => updateAction(event)
+                                                            }
                                                             required
-                                                            error={!!actionsError[action.id]?.turn}
-                                                            helperText={actionsError[action.id]?.turn}
-                                                            label='Giro'
+                                                            error={
+                                                                !!actionsError[action.id]?.turn
+                                                            }
+                                                            helperText={
+                                                                actionsError[action.id]?.turn
+                                                            }
+                                                            label="Giro"
                                                             inputProps={{
                                                                 'data-action-id': action.id,
                                                                 'data-field': 'turn',
-                                                                step: '0.01' 
+                                                                step: '0.01'
                                                             }}
                                                             value={action.turn}
-                                                            type='number'
+                                                            type="number"
                                                         />
                                                     </Grid>
                                                     <Grid item xs={3}>
                                                         <TextField
-                                                            onChange={(event) => updateAction(event)}
+                                                            onChange={
+                                                                (event) => updateAction(event)
+                                                            }
                                                             required
-                                                            error={!!actionsError[action.id]?.reward}
-                                                            helperText={actionsError[action.id]?.reward}
-                                                            label='Recompensa'
+                                                            error={
+                                                                !!actionsError[action.id]?.reward
+                                                            }
+                                                            helperText={
+                                                                actionsError[action.id]?.reward
+                                                            }
+                                                            label="Recompensa"
                                                             inputProps={{
                                                                 'data-action-id': action.id,
                                                                 'data-field': 'reward',
-                                                                step: '1' 
+                                                                step: '1'
                                                             }}
                                                             value={action.reward}
-                                                            type='number'
+                                                            type="number"
                                                         />
                                                     </Grid>
                                                 </Grid>
                                             ]}
-                                        >
-                                        </ListItem>
+                                        />
                                     ))
                                 }
                             </List>
@@ -458,7 +436,6 @@ function App() {
                         <Grid xs={3}>
                             <Button
                                 onClick={addAction}
-
                                 variant="contained"
                             >
                                 Agregar Accion
@@ -467,11 +444,10 @@ function App() {
                         <Grid xs={3}>
                             <Button
                                 onClick={() => {
-                                    window.loadConfig().then((config) => {
-                                        setConfig({ ...defaultConfig, ...config });
+                                    window.loadConfig().then((loadedConfig) => {
+                                        setConfig({ ...defaultConfig, ...loadedConfig });
                                     });
                                 }}
-
                                 variant="contained"
                             >
                                 Cargar config
@@ -482,8 +458,8 @@ function App() {
                             <Button
                                 onClick={() => {
                                     setConfig(defaultConfig);
+                                    setActionsError({});
                                 }}
-
                                 variant="contained"
                             >
                                 Reset config
@@ -495,7 +471,6 @@ function App() {
                                 onClick={() => {
                                     window.triggerProcess(JSON.stringify(config));
                                 }}
-
                                 variant="contained"
                             >
                                 Comenzar
@@ -507,7 +482,6 @@ function App() {
                                 onClick={() => {
                                     window.stopProcess();
                                 }}
-
                                 variant="contained"
                             >
                                 Detener

@@ -1,11 +1,14 @@
+/* eslint-disable import/no-extraneous-dependencies */
 // Module to control the application lifecycle and the native browser window.
-const { app, BrowserWindow, protocol, ipcMain, ipcRenderer, dialog } = require("electron");
-const path = require("path");
-const url = require("url");
+const {
+    app, BrowserWindow, protocol, ipcMain, dialog
+} = require('electron');
+const path = require('path');
+const url = require('url');
 const { spawn } = require('child_process');
 const fs = require('fs');
 
-let processes = [];
+const processes = [];
 let mainWindow;
 
 // Create the native browser window.
@@ -16,9 +19,9 @@ function createWindow() {
         // Set the path of an additional "preload" script that can be used to
         // communicate between node-land and browser-land.
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true
-        },
+        }
     });
 
     // In production, set the initial browser path to the local bundle generated
@@ -26,11 +29,11 @@ function createWindow() {
     // In development, set it to localhost to allow live/hot-reloading.
     const appURL = app.isPackaged
         ? url.format({
-            pathname: path.join(__dirname, "index.html"),
-            protocol: "file:",
-            slashes: true,
+            pathname: path.join(__dirname, 'index.html'),
+            protocol: 'file:',
+            slashes: true
         })
-        : "http://localhost:3000";
+        : 'http://localhost:3000';
     mainWindow.loadURL(appURL);
 
     // Automatically open Chrome's DevTools in development mode.
@@ -43,13 +46,13 @@ function createWindow() {
 // them from the local production bundle (e.g.: local fonts, etc...).
 function setupLocalFilesNormalizerProxy() {
     protocol.registerHttpProtocol(
-        "file",
+        'file',
         (request, callback) => {
-            const url = request.url.substr(8);
-            callback({ path: path.normalize(`${__dirname}/${url}`) });
+            const requestedUrl = request.url.substr(8);
+            callback({ path: path.normalize(`${__dirname}/${requestedUrl}`) });
         },
         (error) => {
-            if (error) console.error("Failed to register protocol");
+            if (error) console.error('Failed to register protocol');
         }
     );
 }
@@ -61,7 +64,7 @@ app.whenReady().then(() => {
     createWindow();
     setupLocalFilesNormalizerProxy();
 
-    app.on("activate", function () {
+    app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -73,8 +76,8 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS.
 // There, it's common for applications and their menu bar to stay active until
 // the user quits  explicitly with Cmd + Q.
-app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
         app.quit();
     }
 });
@@ -82,9 +85,10 @@ app.on("window-all-closed", function () {
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,
 // disallowing any other kinds of navigation.
-const allowedNavigationDestinations = "https://my-electron-app.com";
-app.on("web-contents-created", (event, contents) => {
-    contents.on("will-navigate", (event, navigationUrl) => {
+const allowedNavigationDestinations = 'https://my-electron-app.com';
+app.on('web-contents-created', (event, contents) => {
+    // eslint-disable-next-line no-shadow
+    contents.on('will-navigate', (event, navigationUrl) => {
         const parsedUrl = new URL(navigationUrl);
 
         if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
@@ -95,60 +99,57 @@ app.on("web-contents-created", (event, contents) => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-ipcMain.on("triggerProcess", (e, data) => {
-    let algorithm;
-    let gzclient;
-
+ipcMain.on('triggerProcess', (e, data) => {
     fs.writeFileSync('config.json', data);
 
-    data = JSON.parse(data);
+    const newData = JSON.parse(data);
 
-    for (let index = 0; index < data.worlds.length; index++) {
-        let world = data.worlds[index];
-        
+    for (let index = 0; index < newData.worlds.length; index++) {
+        const world = newData.worlds[index];
+
         if (world.selected) {
             switch (world.name) {
-                case 'oficina':
-                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/office.world";
-                    break;
-                case 'laberinto':
-                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/maze.world";
-                    break;
-                case 'circuito':
-                    process.env['GYM_GAZEBO_WORLD_UGVETE'] = process.env.UGVETE_HOME + "/gym_gazebo/envs/assets/worlds/round.world";
-                    break;
-                default:
-                    break;
+            case 'oficina':
+                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/office.world`;
+                break;
+            case 'laberinto':
+                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/maze.world`;
+                break;
+            case 'circuito':
+                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/round.world`;
+                break;
+            default:
+                break;
             }
         }
     }
 
-    algorithm = spawn("python", [process.env.UGVETE_HOME + "/turtlebot/circuit2_turtlebot_lidar_qlearn.py"]);
+    const algorithm = spawn('python', [`${process.env.UGVETE_HOME}/turtlebot/circuit2_turtlebot_lidar_qlearn.py`]);
 
-    gzclient = spawn("gzclient", ["--verbose"]);
-    
+    const gzclient = spawn('gzclient', ['--verbose']);
+
     processes.push(algorithm);
     processes.push(gzclient);
-    
-    algorithm.stdout.on('data', function(data) {
-        console.log(data.toString())
-    })
 
-    gzclient.stdout.on('data', function(data) {
-        console.log(data.toString())
-    })
+    algorithm.stdout.on('data', (algorithmData) => {
+        console.log(algorithmData.toString());
+    });
+
+    gzclient.stdout.on('data', (gzclientData) => {
+        console.log(gzclientData.toString());
+    });
 });
 
-ipcMain.on("stopProcess", (e) => {
+ipcMain.on('stopProcess', () => {
     for (let index = 0; index < processes.length; index++) {
         processes[index].kill(9);
     }
 
-    spawn("killall", ["-9", "rosout", "roslaunch", "rosmaster", "gzserver", "nodelet", "robot_state_publisher", "gzclient"]);
+    spawn('killall', ['-9', 'rosout', 'roslaunch', 'rosmaster', 'gzserver', 'nodelet', 'robot_state_publisher', 'gzclient']);
 });
 
-ipcMain.handle("loadConfig", (e) => {
-    let file = dialog.showOpenDialogSync(mainWindow, {
+ipcMain.handle('loadConfig', () => {
+    const file = dialog.showOpenDialogSync(mainWindow, {
         properties: ['openFile'],
         defaultPath: process.env.UGVETE_HOME
     });
