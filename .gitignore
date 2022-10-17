@@ -7,8 +7,8 @@
 **/node_modules
 
 # Setuptools distribution and build folders.
-/dist/
-/build
+**/dist/
+**/build
 
 # Virtualenv
 /env
@@ -52,3 +52,6 @@ Theano/
 catkin_ws/
 
 .vscode/
+app/yarn.lock
+app/package-lock.json
+app/config.json

@@ -2,7 +2,10 @@
     "name": "my-electron-app",
     "version": "0.1.0",
     "private": true,
-    "author": "Sebastian Gonzalez & Felipe Schramm",
+    "author": {
+        "name": "Sebastian Gonzalez & Felipe Schramm",
+        "email": "ugvete@mailinator.com"
+    },
     "description": "UGVETE",
     "main": "./public/electron.js",
     "homepage": "./",
