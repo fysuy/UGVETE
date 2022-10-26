@@ -102,28 +102,6 @@ app.on('web-contents-created', (event, contents) => {
 ipcMain.on('triggerProcess', (e, data) => {
     fs.writeFileSync('config.json', data);
 
-    const newData = JSON.parse(data);
-
-    for (let index = 0; index < newData.worlds.length; index++) {
-        const world = newData.worlds[index];
-
-        if (world.selected) {
-            switch (world.name) {
-            case 'oficina':
-                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/office.world`;
-                break;
-            case 'laberinto':
-                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/maze.world`;
-                break;
-            case 'circuito':
-                process.env.GYM_GAZEBO_WORLD_UGVETE = `${process.env.UGVETE_HOME}/gym_gazebo/envs/assets/worlds/round.world`;
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
     const algorithm = spawn('python', [`${process.env.UGVETE_HOME}/turtlebot/circuit2_turtlebot_lidar_qlearn.py`]);
 
     const gzclient = spawn('gzclient', ['--verbose']);

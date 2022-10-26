@@ -26,6 +26,20 @@ def render():
 if __name__ == '__main__':
     f = open(os.environ['UGVETE_HOME'] + '/app/config.json', 'r')
     config = json.loads(f.read())
+    
+    for i in range(len(config["worlds"])):
+        currentWorld = config["worlds"][i]
+
+        if currentWorld["selected"]:
+            if currentWorld["name"] == 'oficina': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/office.world'
+            
+            if currentWorld["name"] == 'laberinto': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/maze.world'
+
+            if currentWorld["name"] == 'circuito': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/round.world'
+
 
     env = gym.make('GazeboCircuit2TurtlebotLidar-v0', config=config)
 

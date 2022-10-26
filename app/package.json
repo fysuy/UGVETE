@@ -1,5 +1,5 @@
 {
-    "name": "my-electron-app",
+    "name": "ugvete",
     "version": "0.1.0",
     "private": true,
     "author": {
@@ -66,8 +66,8 @@
         "wait-on": "^6.0.1"
     },
     "build": {
-        "appId": "com.electron.myapp",
-        "productName": "My Electron App",
+        "appId": "com.ugvete.app",
+        "productName": "UGVETE",
         "files": [
             "build/**/*",
             "node_modules/**/*"
