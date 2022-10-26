@@ -26,6 +26,7 @@ def render():
 if __name__ == '__main__':
     f = open(os.environ['UGVETE_HOME'] + '/app/config.json', 'r')
     config = json.loads(f.read())
+    f.close()
     
     for i in range(len(config["worlds"])):
         currentWorld = config["worlds"][i]
@@ -108,36 +109,20 @@ if __name__ == '__main__':
             plotter.plot(env)
             with open('q-learn.pkl', 'wb') as file:
                 pickle.dump(qlearn, file)
+                file.close()
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)
-        print(
-            "EP: " + str(x+1) + 
-            " - [alpha: " + str(round(qlearn.alpha,2)) + 
-            " - gamma: " +str(round(qlearn.gamma,2)) + 
-            " - epsilon: " + str(round(qlearn.epsilon,2)) + 
-            "] - Reward: " + str(cumulated_reward) + 
-            "     Time: %d:%02d:%02d" % (h, m, s)
-        )
+        print ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s))
 
     #Github table content
-    print (
-        "\n|" + str(total_episodes) + 
-        "|" + str(qlearn.alpha) + 
-        "|" + str(qlearn.gamma) + 
-        "|" + str(initial_epsilon) + 
-        "*" + str(epsilon_discount) + 
-        "|" + str(highest_reward)
-        + "| PICTURE |"
-    )
+    print ("\n|"+str(total_episodes)+"|"+str(qlearn.alpha)+"|"+str(qlearn.gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |")
 
     l = last_time_steps.tolist()
     l.sort()
 
     #print("Parameters: a="+str)
     print("Overall score: {:0.2f}".format(last_time_steps.mean()))
-    print("Best 100 score: {:0.2f}".format(
-        reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])
-    ))
+    print("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
 
     env.close()

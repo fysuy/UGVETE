@@ -20,9 +20,12 @@ function createWindow() {
         // communicate between node-land and browser-land.
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: true
+            contextIsolation: true,
+            devTools: false
         }
     });
+
+    mainWindow.removeMenu();
 
     // In production, set the initial browser path to the local bundle generated
     // by the Create React App build process.
@@ -110,11 +113,24 @@ ipcMain.on('triggerProcess', (e, data) => {
     processes.push(gzclient);
 
     algorithm.stdout.on('data', (algorithmData) => {
-        console.log(algorithmData.toString());
+        console.error(`${algorithmData}`);
+    });
+
+    // This is needed otherwise the app will freeze
+    algorithm.stderr.on('data', (algorithmError) => {
+        console.error(`${algorithmError}`);
+    });
+
+    algorithm.on('error', (err) => {
+        console.log(`There was an error: ${err}`);
     });
 
     gzclient.stdout.on('data', (gzclientData) => {
-        console.log(gzclientData.toString());
+        console.log(`${gzclientData}`);
+    });
+
+    gzclient.stderr.on('data', (gzclientError) => {
+        console.error(`${gzclientError}`);
     });
 });
 
