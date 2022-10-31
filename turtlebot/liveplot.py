@@ -27,9 +27,9 @@ class LivePlot(object):
 
     def plot(self, env):
         if self.data_key is rewards_key:
-            data = gym.wrappers.Monitor.get_episode_rewards(env)
+            data = env.return_queue
         else:
-            data = gym.wrappers.Monitor.get_episode_lengths(env)
+            data = env.length_queue
 
         plt.plot(data, color=self.line_color)
 

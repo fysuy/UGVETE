@@ -117,8 +117,8 @@ ipcMain.on('triggerProcess', (e, data) => {
     });
 
     // This is needed otherwise the app will freeze
-    algorithm.stderr.on('data', (algorithmError) => {
-        console.error(`${algorithmError}`);
+    algorithm.stderr.on('data', () => {
+        // console.error(`${algorithmError}`);
     });
 
     algorithm.on('error', (err) => {
@@ -147,6 +147,39 @@ ipcMain.handle('loadConfig', () => {
         properties: ['openFile'],
         defaultPath: process.env.UGVETE_HOME
     });
+    let config;
 
-    return JSON.parse(fs.readFileSync(file[0]));
+    try {
+        config = JSON.parse(fs.readFileSync(file[0]));
+    } catch (error) {
+        dialog.showMessageBox(mainWindow, {
+            message: 'Ocurrio un error al cargar el archivo de configuracion, intente nuevamente.'
+        });
+    }
+
+    return {
+        config,
+        configFileName: path.basename(file[0])
+    };
+});
+
+ipcMain.handle('loadProgress', () => {
+    const file = dialog.showOpenDialogSync(mainWindow, {
+        properties: ['openFile'],
+        defaultPath: process.env.UGVETE_HOME
+    });
+    let progress;
+
+    try {
+        progress = JSON.parse(fs.readFileSync(file[0]));
+    } catch (error) {
+        dialog.showMessageBox(mainWindow, {
+            message: 'Ocurrio un error al cargar el archivo de progreso, intente nuevamente.'
+        });
+    }
+
+    return {
+        progress,
+        progressFileName: path.basename(file[0])
+    };
 });

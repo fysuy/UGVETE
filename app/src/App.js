@@ -11,11 +11,16 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons/faCircleXmark';
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -69,6 +74,8 @@ function App() {
     };
 
     const [config, setConfig] = React.useState(defaultConfig);
+    const [configName, setConfigName] = React.useState('CONFIG');
+    const [progressName, setProgressName] = React.useState('PROGRESO');
     const [episodesError, setEpisodesError] = React.useState('');
     const [timestepsError, setTimestepsError] = React.useState('');
 
@@ -331,6 +338,9 @@ function App() {
                         <Grid container>
                             <Typography sx={{ textAlign: 'left' }} variant="h7" component="div">
                                 Acciones
+                                <IconButton edge="end" aria-label="add" onClick={addAction}>
+                                    <AddCircleIcon />
+                                </IconButton>
                             </Typography>
                             <List dense={false}>
                                 {
@@ -432,46 +442,54 @@ function App() {
                             </List>
                         </Grid>
                     </Grid>
+
                     <Grid container xs={12}>
                         <Grid xs={3}>
-                            <Button
-                                onClick={addAction}
-                                variant="contained"
-                            >
-                                Agregar Accion
-                            </Button>
-                        </Grid>
-                        <Grid xs={3}>
-                            <Button
+                            <Chip
+                                color="primary"
+                                label={configName}
                                 onClick={() => {
-                                    window.loadConfig().then((loadedConfig) => {
-                                        setConfig({ ...defaultConfig, ...loadedConfig });
+                                    window.ipcRender.invoke('loadConfig').then((response) => {
+                                        setConfigName(response.configFileName);
+                                        setConfig({ ...defaultConfig, ...response.config });
                                     });
                                 }}
-                                variant="contained"
-                            >
-                                Cargar config
-                            </Button>
-                        </Grid>
-
-                        <Grid xs={3}>
-                            <Button
-                                onClick={() => {
+                                onDelete={() => {
+                                    setConfigName('CONFIG');
                                     setConfig(defaultConfig);
                                     setActionsError({});
                                 }}
-                                variant="contained"
-                            >
-                                Reset config
-                            </Button>
+                                deleteIcon={<DeleteIcon />}
+                            />
+                        </Grid>
+
+                        <Grid xs={3}>
+                            <Chip
+                                color="primary"
+                                label={progressName}
+                                onClick={() => {
+                                    window.ipcRender.invoke('loadProgress').then((response) => {
+                                        setProgressName(response.progressFileName);
+                                        // setConfig({ ...defaultConfig, ...response.progress });
+                                        // TODO!
+                                    });
+                                }}
+                                onDelete={() => {
+                                    setConfigName('PROGRESO');
+                                    // setConfig(defaultConfig); TODO!
+                                    setActionsError({});
+                                }}
+                                deleteIcon={<DeleteIcon />}
+                            />
                         </Grid>
 
                         <Grid xs={3}>
                             <Button
                                 onClick={() => {
-                                    window.triggerProcess(JSON.stringify(config));
+                                    window.ipcRender.send('triggerProcess', JSON.stringify(config));
                                 }}
                                 variant="contained"
+                                startIcon={<FontAwesomeIcon icon={faPlay} />}
                             >
                                 Comenzar
                             </Button>
@@ -480,13 +498,15 @@ function App() {
                         <Grid xs={3}>
                             <Button
                                 onClick={() => {
-                                    window.stopProcess();
+                                    window.ipcRender.send('stopProcess');
                                 }}
+                                startIcon={<FontAwesomeIcon icon={faCircleXmark} />}
                                 variant="contained"
                             >
                                 Detener
                             </Button>
                         </Grid>
+
                     </Grid>
                 </Grid>
             </Box>

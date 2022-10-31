@@ -4,6 +4,7 @@ import gym
 from gym import wrappers
 import gym_gazebo
 import time
+import calendar;
 import numpy
 import random
 import time
@@ -12,16 +13,6 @@ import json
 import os
 import qlearn
 import liveplot
-
-def render():
-    render_skip = 0 #Skip first X episodes.
-    render_interval = 50 #Show render Every Y episodes.
-    render_episodes = 10 #Show Z episodes every rendering.
-
-    if (x%render_interval == 0) and (x != 0) and (x > render_skip):
-        env.render()
-    elif ((x-render_episodes)%render_interval == 0) and (x != 0) and (x > render_skip) and (render_episodes < x):
-        env.render(close=True)
 
 if __name__ == '__main__':
     f = open(os.environ['UGVETE_HOME'] + '/app/config.json', 'r')
@@ -45,7 +36,9 @@ if __name__ == '__main__':
     env = gym.make('GazeboCircuit2TurtlebotLidar-v0', config=config)
 
     outdir = '/tmp/gazebo_gym_experiments'
-    env = gym.wrappers.Monitor(env, outdir, force=True)
+    # env = gym.wrappers.Monitor(env, outdir, force=True)
+    env = gym.wrappers.RecordEpisodeStatistics(env)
+    
     plotter = liveplot.LivePlot(outdir)
 
     last_time_steps = numpy.ndarray(0)
@@ -64,12 +57,15 @@ if __name__ == '__main__':
     aux_time_steps = config['timesteps']
     total_episodes = int(aux_total_episodes)
     total_time_steps = int(aux_time_steps)
+    
     print("Total episodes: " + str(total_episodes))
     print("Total timesteps: "+ str(total_time_steps))    
 
+    gmt = time.gmtime()
+    ts = calendar.timegm(gmt)
+
     for x in range(total_episodes):
         done = False
-
         cumulated_reward = 0 #Should going forward give more reward then L/R ?
 
         observation = env.reset()
@@ -97,7 +93,7 @@ if __name__ == '__main__':
 
             qlearn.learn(state, action, reward, nextState)
 
-            env._flush(force=True)
+            # env._flush(force=True)
 
             if not(done):
                 state = nextState
@@ -106,8 +102,8 @@ if __name__ == '__main__':
                 break
 
         if x%100==0 and qlearn.q != {}:
-            plotter.plot(env)
-            with open('q-learn.pkl', 'wb') as file:
+            # plotter.plot(env)
+            with open('q-learn-' + str(ts) + '.pkl', 'wb') as file:
                 pickle.dump(qlearn, file)
                 file.close()
 
