@@ -44,7 +44,7 @@ if __name__ == '__main__':
     last_time_steps = numpy.ndarray(0)
 
     qlearn = qlearn.QLearn(actions=range(env.action_space.n),
-                    alpha=0.2, gamma=0.8, epsilon=0.9)
+                    alpha=0.2, gamma=0.8, epsilon=0.9, config=config)
 
     initial_epsilon = qlearn.epsilon
 
@@ -60,6 +60,7 @@ if __name__ == '__main__':
     
     print("Total episodes: " + str(total_episodes))
     print("Total timesteps: "+ str(total_time_steps))    
+    print("progressFilePath: " + config['progressFilePath'])    
 
     gmt = time.gmtime()
     ts = calendar.timegm(gmt)

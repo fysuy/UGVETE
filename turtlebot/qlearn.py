@@ -4,9 +4,9 @@ import os
 from turtle import back
 
 class QLearn:
-    def __init__(self, actions, epsilon, alpha, gamma):
+    def __init__(self, actions, epsilon, alpha, gamma, config):
         backup = {}
-        path = 'q-learn.pkl'
+        path = config['progressFilePath']
 
         if os.path.exists(path) and os.path.getsize(path) > 0:
             with open(path, 'rb') as file:

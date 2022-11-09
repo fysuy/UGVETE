@@ -470,13 +470,18 @@ function App() {
                                 onClick={() => {
                                     window.ipcRender.invoke('loadProgress').then((response) => {
                                         setProgressName(response.progressFileName);
-                                        // setConfig({ ...defaultConfig, ...response.progress });
-                                        // TODO!
+                                        setConfig({
+                                            ...config,
+                                            progressFilePath: response.progressFilePath
+                                        });
                                     });
                                 }}
                                 onDelete={() => {
-                                    setConfigName('PROGRESO');
-                                    // setConfig(defaultConfig); TODO!
+                                    setProgressName('PROGRESO');
+                                    setConfig({
+                                        ...config,
+                                        progressFilePath: ''
+                                    });
                                     setActionsError({});
                                 }}
                                 deleteIcon={<DeleteIcon />}
