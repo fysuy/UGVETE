@@ -168,18 +168,18 @@ ipcMain.handle('loadProgress', () => {
         properties: ['openFile'],
         defaultPath: process.env.UGVETE_HOME
     });
-    let progress;
-
-    try {
-        progress = JSON.parse(fs.readFileSync(file[0]));
-    } catch (error) {
+    const showErrorMsg = () => {
         dialog.showMessageBox(mainWindow, {
             message: 'Ocurrio un error al cargar el archivo de progreso, intente nuevamente.'
         });
+    };
+
+    if (path.extname(file[0]) !== '.pkl') {
+        showErrorMsg();
     }
 
     return {
-        progress,
-        progressFileName: path.basename(file[0])
+        progressFileName: path.basename(file[0]),
+        progressFilePath: file[0]
     };
 });

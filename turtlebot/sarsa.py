@@ -3,11 +3,11 @@ import pickle
 import random
 
 class Sarsa:
-    def __init__(self, actions, epsilon, alpha, gamma):
+    def __init__(self, actions, epsilon, alpha, gamma, config):
         backup = {}
-        path = 'sarsa-q.pkl'
+        path = config['progressFilePath']
 
-        if os.path.exists(path) and os.path.getsize(path) > 0:
+        if path != '' and os.path.exists(path) and os.path.getsize(path) > 0:
             with open(path, 'rb') as file:
                 backup = pickle.load(file)
                 self.q = backup.q

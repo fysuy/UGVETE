@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import calendar
 from functools import reduce
 import pickle
 import gym
@@ -8,24 +9,44 @@ import time
 import numpy
 import random
 import time
-import app.simulation as sim
+import os
+import time
+import pickle
+import json
 
 import liveplot
 import sarsa
 
 
 if __name__ == '__main__':
+    f = open(os.environ['UGVETE_HOME'] + '/app/config.json', 'r')
+    config = json.loads(f.read())
+    f.close()
+    
+    for i in range(len(config["worlds"])):
+        currentWorld = config["worlds"][i]
 
-    env = gym.make('GazeboCircuit2TurtlebotLidar-v0')
+        if currentWorld["selected"]:
+            if currentWorld["name"] == 'oficina': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/office.world'
+            
+            if currentWorld["name"] == 'laberinto': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/maze.world'
+
+            if currentWorld["name"] == 'circuito': 
+                os.environ['GYM_GAZEBO_WORLD_UGVETE'] = os.environ['UGVETE_HOME'] + '/gym_gazebo/envs/assets/worlds/round.world'
+
+    env = gym.make('GazeboCircuit2TurtlebotLidar-v0', config=config)
 
     outdir = '/tmp/gazebo_gym_experiments'
-    env = gym.wrappers.Monitor(env, outdir, force=True)
+    #env = gym.wrappers.Monitor(env, outdir, force=True)
+    env = gym.wrappers.RecordEpisodeStatistics(env)
     plotter = liveplot.LivePlot(outdir)
 
     last_time_steps = numpy.ndarray(0)
 
     sarsa = sarsa.Sarsa(actions=range(env.action_space.n),
-                    epsilon=0.9, alpha=0.2, gamma=0.9)
+                    epsilon=0.9, alpha=0.2, gamma=0.9, config=config)
 
     initial_epsilon = sarsa.epsilon
 
@@ -34,12 +55,15 @@ if __name__ == '__main__':
     start_time = time.time()
     highest_reward = 0
 
-    simulation = env.simulation
-    aux_tot_eps, aux_time_steps = sim.get_simulation_properties(simulation)      
-    total_episodes = int(aux_tot_eps)
+    aux_total_episodes = config['episodes']
+    aux_time_steps = config['timesteps']   
+    total_episodes = int(aux_total_episodes)
     total_time_steps = int(aux_time_steps)
     print("Total episodes: " + str(total_episodes))
     print("Total timesteps: "+ str(total_time_steps))
+
+    gmt = time.gmtime()
+    ts = calendar.timegm(gmt)
 
     for x in range(total_episodes):
         done = False
@@ -73,7 +97,7 @@ if __name__ == '__main__':
             #sarsa.learn(state, action, reward, nextState)
             sarsa.learn(state, action, reward, nextState, nextAction)
 
-            env._flush(force=True)
+            #env._flush(force=True)
 
             if not(done):
                 state = nextState
@@ -82,9 +106,10 @@ if __name__ == '__main__':
                 break
 
         if x%100==0:
-            plotter.plot(env)
-            with open('sarsa-q.pkl', 'wb') as file:
+            # plotter.plot(env)
+            with open('sarsa-q-' + str(ts) + '.pkl', 'wb') as file:
                 pickle.dump(sarsa, file)
+                file.close()
 
         m, s = divmod(int(time.time() - start_time), 60)
         h, m = divmod(m, 60)

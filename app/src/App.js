@@ -70,7 +70,9 @@ function App() {
         }, {
             name: 'circuito',
             selected: false
-        }]
+        }],
+
+        progressFilePath: ''
     };
 
     const [config, setConfig] = React.useState(defaultConfig);

@@ -8,7 +8,7 @@ class QLearn:
         backup = {}
         path = config['progressFilePath']
 
-        if os.path.exists(path) and os.path.getsize(path) > 0:
+        if path != '' and os.path.exists(path) and os.path.getsize(path) > 0:
             with open(path, 'rb') as file:
                 backup = pickle.load(file)
                 self.q = backup.q
