@@ -103,9 +103,28 @@ app.on('web-contents-created', (event, contents) => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 ipcMain.on('triggerProcess', (e, data) => {
+    let algorithm;
+
     fs.writeFileSync('config.json', data);
 
-    const algorithm = spawn('python', [`${process.env.UGVETE_HOME}/turtlebot/circuit2_turtlebot_lidar_qlearn.py`]);
+    const parsedData = JSON.parse(data);
+
+    for (let index = 0; index < parsedData.algorithms.length; index++) {
+        const algorithmData = parsedData.algorithms[index];
+
+        if (algorithmData.selected) {
+            switch (algorithmData.name) {
+            case 'qLearn':
+                algorithm = spawn('python', [`${process.env.UGVETE_HOME}/turtlebot/circuit2_turtlebot_lidar_qlearn.py`]);
+                break;
+            case 'sarsa':
+                algorithm = spawn('python', [`${process.env.UGVETE_HOME}/turtlebot/circuit2_turtlebot_lidar_sarsa.py`]);
+                break;
+            default:
+                break;
+            }
+        }
+    }
 
     const gzclient = spawn('gzclient', ['--verbose']);
 
